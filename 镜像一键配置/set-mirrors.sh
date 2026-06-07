@@ -1288,15 +1288,15 @@ show_status() {
 # 选择镜像源
 select_source() {
     local prompt_text="$1"
-    echo ""
-    echo "选择镜像源:"
-    echo "  1) 阿里云        (国内首选，速度快)"
-    echo "  2) 清华大学 TUNA (教育网推荐)"
-    echo "  3) 中科大 USTC   (教育网推荐)"
-    echo "  4) 华为云        (企业用户推荐)"
-    echo "  0) 恢复官方源"
-    echo ""
-    echo -n "${prompt_text:-请输入编号 [默认 1]: }"
+    echo "" >&2
+    echo "选择镜像源:" >&2
+    echo "  1) 阿里云        (国内首选，速度快)" >&2
+    echo "  2) 清华大学 TUNA (教育网推荐)" >&2
+    echo "  3) 中科大 USTC   (教育网推荐)" >&2
+    echo "  4) 华为云        (企业用户推荐)" >&2
+    echo "  0) 恢复官方源" >&2
+    echo "" >&2
+    echo -n "${prompt_text:-请输入编号 [默认 1]: }" >&2
     read -r src_choice
     echo "${src_choice:-1}"
 }
@@ -1304,17 +1304,17 @@ select_source() {
 # 单项选择菜单
 select_single_item() {
     local src_name="$1"
-    echo ""
-    echo "请选择要配置的项 (${src_name}):"
-    echo "  ┌─────────────────────────────────────────────┐"
-    echo "  │  a)  npm    b)  pnpm    c)  yarn    d)  bun │"
-    echo "  │  e)  pip    f)  gem     g)  bundler h)  cargo│"
-    echo "  │  i)  rustup j)  go      k)  conda   l)  composer│"
-    echo "  │  m)  apt    n)  docker  o)  nvm     p)  flutter│"
-    echo "  │  q)  homebrew          r)  全部              │"
-    echo "  └─────────────────────────────────────────────┘"
-    echo ""
-    echo -n "请输入字母 [a-r]: "
+    echo "" >&2
+    echo "请选择要配置的项 (${src_name}):" >&2
+    echo "  ┌─────────────────────────────────────────────┐" >&2
+    echo "  │  a)  npm    b)  pnpm    c)  yarn    d)  bun │" >&2
+    echo "  │  e)  pip    f)  gem     g)  bundler h)  cargo│" >&2
+    echo "  │  i)  rustup j)  go      k)  conda   l)  composer│" >&2
+    echo "  │  m)  apt    n)  docker  o)  nvm     p)  flutter│" >&2
+    echo "  │  q)  homebrew          r)  全部              │" >&2
+    echo "  └─────────────────────────────────────────────┘" >&2
+    echo "" >&2
+    echo -n "请输入字母 [a-r]: " >&2
     read -r item_choice
 
     echo "$item_choice"
