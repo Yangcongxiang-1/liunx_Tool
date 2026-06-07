@@ -6,7 +6,7 @@
 #  内置镜像源: 阿里云 / 清华大学 TUNA / 中科大 USTC / 华为云
 # ==============================================================================
 
-set -e
+set -eE
 # 调试模式开关：set -x 可取消注释以调试
 
 # ----- 版本与元数据 -----
@@ -380,9 +380,6 @@ configure_pip() {
         return 1
     fi
 
-    local pip_cmd
-    has_cmd pip && pip_cmd="pip" || pip_cmd="pip3"
-
     # pip.conf 路径
     local pip_dir="$HOME/.pip"
     local pip_conf="$pip_dir/pip.conf"
@@ -696,7 +693,7 @@ configure_apt() {
     fi
 
     local os_id os_version os_codename
-    source /etc/os-release
+    source /etc/os-release 2>/dev/null || true
     os_id="${ID,,}"       # ubuntu / debian
     os_codename="${VERSION_CODENAME}"
     if [[ -z "$os_codename" ]]; then
@@ -712,7 +709,6 @@ configure_apt() {
     fi
 
     local sources_list="/etc/apt/sources.list"
-    local sources_d="/etc/apt/sources.list.d"
 
     if [[ "$src" == "0" ]]; then
         # 恢复官方源 - 从备份恢复
@@ -832,7 +828,7 @@ with open('${daemon_json}.tmp', 'w') as f:
             ok "docker: 已移除 registry-mirrors 配置"
         fi
         # 重启 docker
-        if systemctl is-active docker &>/dev/null 2>&1; then
+        if systemctl is-active docker &>/dev/null; then
             systemctl restart docker
             ok "docker: 服务已重启"
         fi
@@ -874,7 +870,7 @@ EOF
     ok "docker: registry-mirrors → $mirror_url"
 
     # 重启 docker 服务
-    if systemctl is-active docker &>/dev/null 2>&1; then
+    if systemctl is-active docker &>/dev/null; then
         systemctl restart docker
         ok "docker: 服务已重启"
     else
@@ -891,13 +887,11 @@ configure_nvm() {
     url="$(get_mirror_url "$src" "nvm")"
     [[ -z "$url" ]] && { error "nvm: 未找到镜像源 URL"; return 2; }
 
-    if ! has_cmd nvm && [[ ! -f "$HOME/.nvm/nvm.sh" ]]; then
-        # nvm 是函数而不是二进制，检测更宽松
-        export NVM_DIR="$HOME/.nvm"
-        if [[ ! -s "$NVM_DIR/nvm.sh" ]]; then
-            warn "nvm 未安装，跳过"
-            return 1
-        fi
+    # nvm 是 shell 函数而非独立二进制，检测 nvm.sh 是否可加载
+    export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+    if ! command -v nvm &>/dev/null && [[ ! -s "$NVM_DIR/nvm.sh" ]]; then
+        warn "nvm 未安装，跳过"
+        return 1
     fi
 
     local export_line="export NVM_NODEJS_ORG_MIRROR=\"$url\""
@@ -1048,13 +1042,13 @@ configure_homebrew() {
 
 # 显示 ghproxy 节点选择菜单
 select_ghproxy_node() {
-    echo ""
-    echo "选择 ghproxy 服务:"
-    echo "  1) ghproxy.net"
-    echo "  2) ghproxy.com"
-    echo "  3) gh.api.99988866.xyz"
-    echo ""
-    echo -n "请输入编号 [默认 1]: "
+    echo "" >&2
+    echo "选择 ghproxy 服务:" >&2
+    echo "  1) ghproxy.net" >&2
+    echo "  2) ghproxy.com" >&2
+    echo "  3) gh.api.99988866.xyz" >&2
+    echo "" >&2
+    echo -n "请输入编号 [默认 1]: " >&2
     read -r node_choice
     case "${node_choice:-1}" in
         1) echo "https://ghproxy.net" ;;
