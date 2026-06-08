@@ -1,0 +1,5 @@
+# 飞书机器人 - 敏感配置
+飞书OpenCodeBot/.env
+飞书OpenCodeBot/venv/
+飞书OpenCodeBot/__pycache__/
+飞书OpenCodeBot/.feishu_session_id
